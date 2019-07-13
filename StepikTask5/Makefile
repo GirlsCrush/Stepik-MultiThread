@@ -1,9 +1,7 @@
-all : build_server build_client
+all : build_server
 
 build_server : server.cpp
-	g++ -O0 -o server server.cpp
-build_client : client.cpp
-	g++ -O0 -o client client.cpp
+	g++ -std=c++11 -o server server.cpp
 
 .PHONY = clean
 clean :

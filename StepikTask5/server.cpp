@@ -1,11 +1,13 @@
 #include <stdio.h>
+#include <set>
+#include <string>
+#include <cerrno>
 
 #include <sys/types.h>   
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <fcntl.h>     
-#include <set>        
 
 int set_nonblock(int fd) {
 	int flags;
@@ -27,31 +29,61 @@ int main(int argc, char** argv) {
 	SockAddr.sin_family = AF_INET;
 	SockAddr.sin_port = htons(12345);
 	SockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	bind(MasterSocket, (struct sockaddr*)(&SockAddr), sizeof(SockAddr));
+	bind(MasterSocket, (struct sockaddr*)(&SockAddr), 
+		sizeof(SockAddr));
 
 	set_nonblock(MasterSocket);
 
 	listen(MasterSocket, SOMAXCONN);
+	fd_set Set;
 
 	while (true) {
-		fd_set Set;
-		FD_ZERO(&Set):
+		FD_ZERO(&Set);
 		FD_SET(MasterSocket, &Set);
 		for (auto iter = SlaveSockets.begin();
 			iter != SlaveSockets.end();
-			iter++)
+			iter++) {
 			FD_SET(*iter, &Set);
-		int Max = *SlaveSockets.rbegin();
-		int client_fd = accept(MasterSocket, 0, 0);
-
+		}
+		int Max = MasterSocket;
+		if(!SlaveSockets.empty() && Max < *SlaveSockets.rbegin()) {
+			Max = *SlaveSockets.rbegin();
+		}
 		select(Max + 1, &Set, NULL, NULL, NULL);
+		
+		if (FD_ISSET(MasterSocket, &Set)) {
+			int SlaveSocket = accept(MasterSocket, 0, 0);
+			set_nonblock(SlaveSocket);
+			SlaveSockets.insert(SlaveSocket);
+		}
+		auto iter = SlaveSockets.begin();
+		// for (auto iter = SlaveSockets.begin();
+		// 	iter != SlaveSockets.end();
+		// 	iter++) {
+		while (iter != SlaveSockets.end()) {
+			if (FD_ISSET(*iter, &Set)) {
+				static char Buffer[1024];
+				int RecvSize = recv(*iter, Buffer, 1024, 
+				MSG_NOSIGNAL);
+				if ((RecvSize == 0) && (errno != EAGAIN)) { 
+					shutdown(*iter, SHUT_RDWR);
+					close(*iter);
+					iter = SlaveSockets.erase(iter);
+					continue;
+				} else if (RecvSize != 0) {
+					for (auto iter2 = SlaveSockets.begin();
+						iter2 != SlaveSockets.end();
+						iter2++) {
+						if (iter != iter2)
+							send(*iter2, Buffer, RecvSize, MSG_NOSIGNAL);
+						printf("%s", std::string(Buffer, RecvSize).
+							c_str());
+					}
+				}
+			}
+			iter++;
+		}
 
-		char buffer[5] = { 0 , 0 , 0 , 0 , 0 };
-		recv(client_fd, buffer, 4, MSG_NOSIGNAL);
-	    send(client_fd, buffer, 4, 0);
-		shutdown(client_fd, SHUT_RDWR);
-		//close(client_fd);
-		printf("%s\n", buffer);
 	}
 	return 0;
 }
