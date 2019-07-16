@@ -53,13 +53,17 @@ int main(int argc, char** argv) {
 		
 		if (FD_ISSET(MasterSocket, &Set)) {
 			int SlaveSocket = accept(MasterSocket, 0, 0);
+			for (auto iter = SlaveSockets.begin();
+					iter != SlaveSockets.end();
+					iter++) {
+					send(*iter, "A new person is here!\n", 22, MSG_NOSIGNAL);
+				}
+			send(MasterSocket, "A new person is here!\n", 22, MSG_NOSIGNAL);
+			
 			set_nonblock(SlaveSocket);
 			SlaveSockets.insert(SlaveSocket);
 		}
 		auto iter = SlaveSockets.begin();
-		// for (auto iter = SlaveSockets.begin();
-		// 	iter != SlaveSockets.end();
-		// 	iter++) {
 		while (iter != SlaveSockets.end()) {
 			if (FD_ISSET(*iter, &Set)) {
 				static char Buffer[1024];
