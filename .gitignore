@@ -12,6 +12,7 @@
 *.vcxproj
 *.vcxproj.filters
 *.sln
+*.json
 
 # User-specific files
 *.rsuser
