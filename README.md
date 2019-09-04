@@ -37,3 +37,6 @@ N.B. ReAlloc должен сохранять данные в блоке. То е
 
 ## Stepik Task №9
 Эхо-сервер на основе библиотеки libevent с изпользованием event_base и evconnlistener.
+
+## Stepik Task №10
+Эхо-сервер на основе библиотеки libev с изпользованием ev_io и ev_loop.
