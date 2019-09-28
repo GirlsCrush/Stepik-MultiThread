@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/arther/StepikTasks/Stepik-MultiThread/StepikFinalTask/source/main.cpp
+stdio.h
+-
+sys/types.h
+-
+sys/stat.h
+-
+sys/socket.h
+-
+arpa/inet.h
+-
+netinet/in.h
+-
+unistd.h
+-
+string
+-
+fcntl.h
+-
+sys/epoll.h
+-
+

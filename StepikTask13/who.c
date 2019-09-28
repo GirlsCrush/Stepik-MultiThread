@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <vector>
 
 void who_wc() {
     int pfd[2];
@@ -21,5 +22,6 @@ void who_wc() {
 
 int main() {
     who_wc();
+
     return 0;
 }

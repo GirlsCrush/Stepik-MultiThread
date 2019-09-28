@@ -1,0 +1,3 @@
+/home/arther/StepikTasks/Stepik-MultiThread/StepikFinalTask/CMakeFiles/rebuild_cache.dir
+/home/arther/StepikTasks/Stepik-MultiThread/StepikFinalTask/CMakeFiles/final.dir
+/home/arther/StepikTasks/Stepik-MultiThread/StepikFinalTask/CMakeFiles/edit_cache.dir

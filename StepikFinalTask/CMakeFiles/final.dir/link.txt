@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11 -fpermissive  -rdynamic CMakeFiles/final.dir/source/main.cpp.o  -o final -pthread 
